@@ -26,6 +26,24 @@
                     <x-lucide-arrow-right class="size-5" />
                 @endif
             </a>
+            <a href="{{ route('krs.mahasiswa') }}" class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-slate-600 {{ request()->is('krs') ? 'bg-primary text-white' : '' }}">
+                <x-lucide-book class="size-5" />
+                <p class="flex-1 {{ request()->is('krs') ? 'font-semibold' : 'font-regular' }}">
+                    Krs
+                </p>
+                @if (request()->is('krs'))
+                    <x-lucide-arrow-right class="size-5" />
+                @endif
+            </a>
+            <a href="{{ route('jadwal.mahasiswa') }}" class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-slate-600 {{ request()->is('jadwal') ? 'bg-primary text-white' : '' }}">
+                <x-lucide-calendar class="size-5" />
+                <p class="flex-1 {{ request()->is('jadwal') ? 'font-semibold' : 'font-regular' }}">
+                    Jadwal
+                </p>
+                @if (request()->is('jadwal'))
+                    <x-lucide-arrow-right class="size-5" />
+                @endif
+            </a>
             <a href="{{ route('kelola.user') }}" class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-slate-600 {{ request()->is('kelola/user') ? 'bg-primary text-white' : '' }}">
                 <x-lucide-users class="size-5" />
                 <p class="flex-1 {{ request()->is('kelola/user') ? 'font-semibold' : 'font-regular' }}">
@@ -40,7 +58,25 @@
                 <p class="flex-1 {{ request()->is('kelola.matakuliah') ? 'font-semibold' : 'font-regular' }}">
                     Kelola Matakuliah
                 </p>
-                @if (request()->is('profile'))
+                @if (request()->is('kelola/matakuliah'))
+                    <x-lucide-arrow-right class="size-5" />
+                @endif
+            </a>
+            <a href="{{ route('kelola.akademik') }}" class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-slate-600 {{ request()->is('kelola/akademik') ? 'bg-primary text-white' : '' }}">
+                <x-lucide-calendar class="size-5" />
+                <p class="flex-1 {{ request()->is('kelola/akademik') ? 'font-semibold' : 'font-regular' }}">
+                    Kelola Akademik
+                </p>
+                @if (request()->is('kelola/akademik'))
+                    <x-lucide-arrow-right class="size-5" />
+                @endif
+            </a>
+            <a href="{{ route('kelola.prodi') }}" class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-slate-600 {{ request()->is('kelola/prodi') ? 'bg-primary text-white' : '' }}">
+                <x-lucide-school class="size-5" />
+                <p class="flex-1 {{ request()->is('kelola/prodi') ? 'font-semibold' : 'font-regular' }}">
+                    Kelola Prodi
+                </p>
+                @if (request()->is('kelola/prodi'))
                     <x-lucide-arrow-right class="size-5" />
                 @endif
             </a>

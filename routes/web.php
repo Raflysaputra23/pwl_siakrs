@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Jadwal\JadwalMahasiswaController;
+use App\Http\Controllers\Jadwal\JadwalDosenController;
 use App\Http\Controllers\Kelola\KelolaAkademikController;
 use App\Http\Controllers\Kelola\KelolaMatakuliahController;
 use App\Http\Controllers\Kelola\KelolaProdiController;
@@ -32,5 +33,5 @@ Route::get("/profile", [ProfileMahasiswaController::class, 'index'])->name('prof
 Route::get("/krs", [KrsMahasiswaController::class, 'index'])->name('krs.mahasiswa');
 
 Route::get("/jadwal", [JadwalMahasiswaController::class, 'index'])->name('jadwal.mahasiswa');
-
+Route::get("/dosen/jadwal", [JadwalDosenController::class, 'index'])->name('jadwal.dosen');
 

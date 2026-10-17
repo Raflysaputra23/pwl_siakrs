@@ -10,6 +10,7 @@ use App\Http\Controllers\Kelola\KelolaProdiController;
 use App\Http\Controllers\Kelola\KelolaUserController;
 use App\Http\Controllers\Krs\KrsMahasiswaController;
 use App\Http\Controllers\Profile\ProfileMahasiswaController;
+use App\Http\Controllers\Krs\KrsDosenController;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/", [DashboardController::class, 'index'])->name('dashboard');
@@ -35,3 +36,5 @@ Route::get("/krs", [KrsMahasiswaController::class, 'index'])->name('krs.mahasisw
 Route::get("/jadwal", [JadwalMahasiswaController::class, 'index'])->name('jadwal.mahasiswa');
 Route::get("/dosen/jadwal", [JadwalDosenController::class, 'index'])->name('jadwal.dosen');
 
+Route::get("/krs", [KrsMahasiswaController::class, 'index'])->name('krs.mahasiswa');
+Route::get("/dosen/krs", [KrsDosenController::class, 'index'])->name('krs.dosen');

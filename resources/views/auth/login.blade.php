@@ -2,13 +2,6 @@
 
 @section('content')
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - SIAKADKRS</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,20 +13,24 @@
             box-sizing: border-box;
         }
 
-        body {
+        .login-page {
+            width: 100%;
             min-height: 100vh;
+            height: auto;
+            padding: 28px 20px;
             background: #f8fafc;
             font-family: 'Poppins', sans-serif;
             color: #111827;
-            padding: 25px 20px 0;
+            overflow: visible;
         }
 
-        .login-container {
+        .login-page .login-container {
             width: 100%;
             max-width: 672px;
-            min-height: 900px;
+            min-height: 0;
+            height: auto;
             margin: 0 auto;
-            padding: 44px 42px;
+            padding: 44px 42px 32px;
             background: #ffffff;
             border: 1px solid #e0e5eb;
             border-radius: 36px;
@@ -311,12 +308,14 @@
         }
 
         @media (max-width: 600px) {
-            body {
+            .login-page {
                 padding: 12px;
+                min-height: 100vh;
             }
 
-            .login-container {
-                min-height: 100vh;
+            .login-page .login-container {
+                min-height: 0;
+                height: auto;
                 padding: 28px 22px;
                 border-radius: 25px;
             }
@@ -387,11 +386,66 @@
                 font-size: 14px;
             }
         }
+
+        /* Tata letak ringkas agar login muat dalam satu layar laptop */
+        @media (min-width: 601px) and (min-height: 650px) {
+            .login-page {
+                min-height: 100vh;
+                height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 12px 20px;
+                overflow: hidden;
+            }
+
+            .login-page .login-container {
+                max-width: 630px;
+                padding: 24px 36px 18px;
+            }
+
+            .brand { margin-bottom: 22px; gap: 14px; }
+            .brand-icon { width: 48px; height: 48px; min-width: 48px; border-radius: 16px; }
+            .brand-icon svg { width: 25px; height: 25px; }
+            .brand-name { font-size: 23px; }
+            .brand-description { font-size: 14px; }
+            .sso-badge { font-size: 13px; padding: 5px 12px; margin-bottom: 10px; gap: 7px; }
+            .sso-badge svg { width: 17px; height: 17px; }
+            .welcome-title { font-size: 27px; margin-bottom: 5px; }
+            .welcome-description { font-size: 15px; line-height: 1.45; margin-bottom: 18px; }
+            .demo-box { padding: 11px 14px 12px; border-radius: 18px; margin-bottom: 18px; }
+            .demo-title { font-size: 12px; margin-bottom: 8px; gap: 7px; }
+            .demo-title svg { width: 17px; height: 17px; }
+            .demo-buttons { gap: 9px; }
+            .demo-button { height: 36px; border-radius: 13px; font-size: 12px; }
+            .form-group { margin-bottom: 15px; }
+            .label-row { margin-bottom: 6px; }
+            .form-label, .forgot-password { font-size: 12px; }
+            .input-wrapper { height: 52px; gap: 13px; padding: 0 16px; border-radius: 16px; }
+            .input-icon { width: 21px; height: 21px; min-width: 21px; }
+            .input-wrapper input { font-size: 15px; }
+            .password-toggle svg { width: 22px; height: 22px; }
+            .remember-row { margin-top: 12px; gap: 10px; font-size: 13px; }
+            .remember-row input { width: 19px; height: 19px; }
+            .login-button { height: 46px; margin-top: 15px; font-size: 14px; border-radius: 13px; }
+            .footer-text { margin-top: 12px; font-size: 11px; }
+        }
+
+        @media (min-width: 601px) and (max-height: 720px) {
+            .login-page { padding-top: 6px; padding-bottom: 6px; }
+            .login-page .login-container { padding-top: 16px; padding-bottom: 12px; }
+            .brand { margin-bottom: 14px; }
+            .welcome-description { margin-bottom: 12px; }
+            .demo-box { margin-bottom: 12px; }
+            .form-group { margin-bottom: 10px; }
+            .remember-row { margin-top: 8px; }
+            .login-button { margin-top: 10px; }
+            .footer-text { margin-top: 8px; }
+        }
     </style>
-</head>
 
-<body>
 
+    <div class="login-page">
     <main class="login-container">
 
         <header class="brand">
@@ -426,7 +480,7 @@
             <h1 class="welcome-title">Selamat Datang Kembali!</h1>
 
             <p class="welcome-description">
-                Silakan masuk menggunakan akun <strong>**NIM / NIP / Username**</strong>
+                Silakan masuk menggunakan akun <strong>NIM / NIP / Username</strong>
                 Anda untuk mengakses layanan KRS.
             </p>
 
@@ -537,8 +591,23 @@
         </form>
 
     </main>
+    </div>
 
-</body>
-</html>
+<script>
+    function isiAkun(role) {
+        const akun = {
+            admin: { username: 'admin', password: 'admin123' },
+            mahasiswa: { username: '2417051045', password: 'mahasiswa123' },
+            dosen: { username: 'dosen', password: 'dosen123' }
+        };
+        document.getElementById('username').value = akun[role].username;
+        document.getElementById('password').value = akun[role].password;
+    }
+
+    function togglePassword() {
+        const input = document.getElementById('password');
+        input.type = input.type === 'password' ? 'text' : 'password';
+    }
+</script>
 
 @endsection

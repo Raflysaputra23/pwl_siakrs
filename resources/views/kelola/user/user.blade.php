@@ -184,7 +184,7 @@
                                     $avatarColorClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
                                     $prodiGelarTitle = 'Dosen Pengajar';
                                     $prodiGelarSubtitle = 'Gelar: ' . ($dsn->gelar_depan ?: '-') . ' ... ' . ($dsn->gelar_belakang ?: '-');
-                                    $statusBadge = 'Aktif Mengajar';
+                                    $statusBadge = 'Aktif';
                                     $statusBadgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
                                     $jk = '-';
                                     $telp = $dsn->no_telp ?? '-';
@@ -198,12 +198,42 @@
                                     $avatarColorClass = 'bg-purple-50 text-purple-700 border-purple-200';
                                     $prodiGelarTitle = 'Administrator Sistem';
                                     $prodiGelarSubtitle = 'Hak Akses Penuh Sistem';
-                                    $statusBadge = 'Aktif Sistem';
+                                    $statusBadge = 'Aktif';
                                     $statusBadgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
                                 }
 
                                 $parts = preg_split('/\s+/', trim($namaLengkap));
                                 $initials = strtoupper(substr($parts[0] ?? 'U', 0, 1) . (isset($parts[1]) ? substr($parts[1], 0, 1) : (strlen($parts[0] ?? '') > 1 ? substr($parts[0], 1, 1) : 'S')));
+
+                                $userEditPayload = [
+                                    'id' => $user->id,
+                                    'username' => $user->username,
+                                    'role' => $user->role,
+                                    'mahasiswa' => ($role === 'mahasiswa' && $user->mahasiswa) ? [
+                                        'nim' => $user->mahasiswa->nim,
+                                        'nama_lengkap' => $user->mahasiswa->nama_lengkap,
+                                        'id_program_studi' => $user->mahasiswa->id_program_studi,
+                                        'dosen_pa_nip' => $user->mahasiswa->dosen_pa_nip,
+                                        'angkatan' => $user->mahasiswa->angkatan,
+                                        'status' => $user->mahasiswa->status ?? 'aktif',
+                                        'jenis_kelamin' => $user->mahasiswa->jenis_kelamin,
+                                        'email' => $user->mahasiswa->email,
+                                        'no_telp' => $user->mahasiswa->no_telp,
+                                        'alamat' => $user->mahasiswa->alamat,
+                                        'tgl_lahir' => $user->mahasiswa->tgl_lahir ? date('Y-m-d', strtotime($user->mahasiswa->tgl_lahir)) : null,
+                                        'tempat_lahir' => $user->mahasiswa->tempat_lahir,
+                                    ] : null,
+                                    'dosen' => ($role === 'dosen' && $user->dosen) ? [
+                                        'nip' => $user->dosen->nip,
+                                        'nama_lengkap' => $user->dosen->nama_lengkap,
+                                        'gelar_depan' => $user->dosen->gelar_depan,
+                                        'gelar_belakang' => $user->dosen->gelar_belakang,
+                                        'email' => $user->dosen->email,
+                                        'no_telp' => $user->dosen->no_telp,
+                                        'alamat' => $user->dosen->alamat,
+                                    ] : null,
+                                ];
+                                $jsonUserEdit = json_encode($userEditPayload, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
                             @endphp
                             <tr class="hover:bg-slate-50/60 transition" data-role="{{ strtolower($role) }}" data-status="{{ strtolower($statusBadge) }}">
                                 <td class="px-6 py-4">
@@ -260,6 +290,12 @@
                                             title="Lihat Detail Profil"
                                             class="w-8 h-8 flex items-center justify-center rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 transition cursor-pointer">
                                             <x-lucide-eye class="size-4" />
+                                        </button>
+                                        <button type="button"
+                                            class="btn-edit-user w-8 h-8 flex items-center justify-center rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-600 transition cursor-pointer"
+                                            title="Edit Pengguna"
+                                            data-user="{{ $jsonUserEdit }}">
+                                            <x-lucide-pencil class="size-4" />
                                         </button>
                                         @if ($role !== 'admin')
                                             <button type="button"
@@ -669,6 +705,274 @@
         </div>
     </div>
 
+    <!-- Modal Edit User -->
+    <div id="modal-edit-user"
+        class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 transition-all duration-200 hidden">
+        <div
+            class="bg-surface rounded-3xl border border-slate-200 shadow-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-7 space-y-6 relative">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                        <x-lucide-pencil class="size-5" />
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-lg font-bold text-slate-900">Edit Data Pengguna</h3>
+                            <span id="edit-role-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold border capitalize"></span>
+                        </div>
+                        <p class="text-xs text-slate-500">Perbarui akun dan data profil pengguna sistem</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeModal('modal-edit-user')"
+                    class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition cursor-pointer">
+                    <x-lucide-x class="size-4" />
+                </button>
+            </div>
+
+            <form id="edit-user-form" action="" method="POST" class="space-y-6">
+                @csrf
+                @method('PUT')
+
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <x-lucide-shield class="size-4 text-purple-600" />
+                        <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Kredensial Akun</h4>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Username <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="edit-username" name="username" required minlength="3"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition bg-white" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Kata Sandi Baru (Opsional)
+                            </label>
+                            <input type="password" id="edit-password" name="password" minlength="6"
+                                placeholder="Kosongkan jika tidak diubah"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition bg-white" />
+                        </div>
+                    </div>
+                </div>
+
+                <div id="edit-section-mahasiswa" class="space-y-4 hidden">
+                    <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <x-lucide-graduation-cap class="size-4 text-blue-600" />
+                        <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Data Induk Mahasiswa</h4>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                NIM / NPM
+                            </label>
+                            <input type="text" id="edit-mhs-nim" readonly
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 text-sm cursor-not-allowed font-mono" />
+                            <p class="text-[10px] text-slate-400 mt-1">NIM terikat sebagai identitas primer.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Nama Lengkap <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="edit-mhs-nama" name="nama_lengkap" maxlength="200"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Program Studi <span class="text-rose-500">*</span>
+                            </label>
+                            <select id="edit-mhs-prodi" name="id_program_studi"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition bg-white">
+                                <option value="">-- Pilih Program Studi --</option>
+                                @foreach ($programStudiList as $prodi)
+                                    <option value="{{ $prodi->id }}">{{ $prodi->nama_prodi }} ({{ $prodi->singkatan }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Dosen Pembimbing Akademik (PA)
+                            </label>
+                            <select id="edit-mhs-dosen-pa" name="dosen_pa_nip"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition bg-white">
+                                <option value="">-- Belum Ada Dosen PA / Kosongkan --</option>
+                                @foreach ($dosenList as $dsn)
+                                    <option value="{{ $dsn->nip }}">
+                                        {{ $dsn->gelar_depan ? $dsn->gelar_depan . ' ' : '' }}{{ $dsn->nama_lengkap }}{{ $dsn->gelar_belakang ? ', ' . $dsn->gelar_belakang : '' }} ({{ $dsn->nip }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Angkatan <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="number" id="edit-mhs-angkatan" name="angkatan" min="1990" max="2030"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition font-mono" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Jenis Kelamin <span class="text-rose-500">*</span>
+                            </label>
+                            <select id="edit-mhs-jk" name="jenis_kelamin"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition bg-white">
+                                <option value="laki-laki">Laki-Laki</option>
+                                <option value="perempuan">Perempuan</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Email Mahasiswa
+                            </label>
+                            <input type="email" id="edit-mhs-email" name="email_mhs" maxlength="200"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                No. Telepon / WhatsApp
+                            </label>
+                            <input type="tel" id="edit-mhs-telp" name="no_telp_mhs" maxlength="20"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Tempat Lahir
+                            </label>
+                            <input type="text" id="edit-mhs-tempat-lahir" name="tempat_lahir" maxlength="100"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Tanggal Lahir
+                            </label>
+                            <input type="date" id="edit-mhs-tgl-lahir" name="tgl_lahir"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition bg-white" />
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Status Mahasiswa <span class="text-rose-500">*</span>
+                            </label>
+                            <select id="edit-mhs-status" name="status_mhs"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition bg-white">
+                                <option value="aktif">Aktif</option>
+                                <option value="cuti">Cuti</option>
+                                <option value="lulus">Lulus</option>
+                                <option value="keluar">Keluar</option>
+                            </select>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Alamat Domisili
+                            </label>
+                            <textarea id="edit-mhs-alamat" name="alamat_mhs" rows="2"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="edit-section-dosen" class="space-y-4 hidden">
+                    <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <x-lucide-briefcase class="size-4 text-emerald-600" />
+                        <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Data Induk Dosen</h4>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                NIP
+                            </label>
+                            <input type="text" id="edit-dsn-nip" readonly
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 text-sm cursor-not-allowed font-mono" />
+                            <p class="text-[10px] text-slate-400 mt-1">NIP terikat sebagai identitas primer.</p>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Nama Lengkap (Tanpa Gelar) <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="edit-dsn-nama" name="nama_dosen" maxlength="200"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Gelar Depan
+                            </label>
+                            <input type="text" id="edit-dsn-gelar-depan" name="gelar_depan" maxlength="100" placeholder="Prof., Dr."
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Gelar Belakang
+                            </label>
+                            <input type="text" id="edit-dsn-gelar-belakang" name="gelar_belakang" maxlength="100" placeholder="S.Kom., M.Kom."
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Email Dosen
+                            </label>
+                            <input type="email" id="edit-dsn-email" name="email_dosen" maxlength="200"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                No. Telepon Dosen
+                            </label>
+                            <input type="tel" id="edit-dsn-telp" name="no_telp_dosen" maxlength="20"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition" />
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                Alamat Domisili
+                            </label>
+                            <textarea id="edit-dsn-alamat" name="alamat_dosen" rows="2"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 transition"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="edit-section-admin" class="p-4 rounded-2xl bg-purple-50/50 border border-purple-100 text-xs text-purple-800 space-y-1 hidden">
+                    <p class="font-bold flex items-center gap-1.5 text-purple-900">
+                        <x-lucide-shield-check class="size-4 text-purple-600" />
+                        Administrator Sistem
+                    </p>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                    <button type="button" onclick="closeModal('modal-edit-user')"
+                        class="px-5 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold transition cursor-pointer">
+                        Batal
+                    </button>
+                    <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold transition shadow-sm shadow-amber-500/20 cursor-pointer">
+                        <x-lucide-save class="size-4" />
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         function setUserRole(role) {
             const inputRole = document.getElementById('input-selected-role');
@@ -800,15 +1104,111 @@
         document.getElementById('filter-user-status')?.addEventListener('change', applyTableFilters);
         document.getElementById('search-user-input')?.addEventListener('input', applyTableFilters);
 
+        function openEditUser(data) {
+            const form = document.getElementById('edit-user-form');
+            if (!form || !data) return;
+
+            form.action = `{{ url('/kelola/user/update') }}/${data.id}`;
+
+            document.getElementById('edit-username').value = data.username || '';
+            document.getElementById('edit-password').value = '';
+
+            const badgeRole = document.getElementById('edit-role-badge');
+            const secMhs = document.getElementById('edit-section-mahasiswa');
+            const secDsn = document.getElementById('edit-section-dosen');
+            const secAdm = document.getElementById('edit-section-admin');
+
+            const mhsNama = document.getElementById('edit-mhs-nama');
+            const mhsProdi = document.getElementById('edit-mhs-prodi');
+            const mhsAngkatan = document.getElementById('edit-mhs-angkatan');
+            const dsnNama = document.getElementById('edit-dsn-nama');
+
+            if (data.role === 'mahasiswa') {
+                badgeRole.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold border bg-blue-50 text-blue-700 border-blue-200 capitalize";
+                badgeRole.textContent = 'Mahasiswa';
+
+                secMhs.classList.remove('hidden');
+                secDsn.classList.add('hidden');
+                secAdm.classList.add('hidden');
+
+                if (mhsNama) mhsNama.required = true;
+                if (mhsProdi) mhsProdi.required = true;
+                if (mhsAngkatan) mhsAngkatan.required = true;
+                if (dsnNama) dsnNama.required = false;
+
+                const m = data.mahasiswa || {};
+                document.getElementById('edit-mhs-nim').value = m.nim || '';
+                document.getElementById('edit-mhs-nama').value = m.nama_lengkap || '';
+                document.getElementById('edit-mhs-prodi').value = m.id_program_studi || '';
+                document.getElementById('edit-mhs-dosen-pa').value = m.dosen_pa_nip || '';
+                document.getElementById('edit-mhs-angkatan').value = m.angkatan || '';
+                document.getElementById('edit-mhs-jk').value = m.jenis_kelamin || 'laki-laki';
+                document.getElementById('edit-mhs-email').value = m.email || '';
+                document.getElementById('edit-mhs-telp').value = m.no_telp || '';
+                document.getElementById('edit-mhs-tempat-lahir').value = m.tempat_lahir || '';
+                document.getElementById('edit-mhs-tgl-lahir').value = m.tgl_lahir || '';
+                document.getElementById('edit-mhs-status').value = m.status || 'aktif';
+                document.getElementById('edit-mhs-alamat').value = m.alamat || '';
+            } else if (data.role === 'dosen') {
+                badgeRole.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold border bg-emerald-50 text-emerald-700 border-emerald-200 capitalize";
+                badgeRole.textContent = 'Dosen';
+
+                secDsn.classList.remove('hidden');
+                secMhs.classList.add('hidden');
+                secAdm.classList.add('hidden');
+
+                if (mhsNama) mhsNama.required = false;
+                if (mhsProdi) mhsProdi.required = false;
+                if (mhsAngkatan) mhsAngkatan.required = false;
+                if (dsnNama) dsnNama.required = true;
+
+                const d = data.dosen || {};
+                document.getElementById('edit-dsn-nip').value = d.nip || '';
+                document.getElementById('edit-dsn-nama').value = d.nama_lengkap || '';
+                document.getElementById('edit-dsn-gelar-depan').value = d.gelar_depan || '';
+                document.getElementById('edit-dsn-gelar-belakang').value = d.gelar_belakang || '';
+                document.getElementById('edit-dsn-email').value = d.email || '';
+                document.getElementById('edit-dsn-telp').value = d.no_telp || '';
+                document.getElementById('edit-dsn-alamat').value = d.alamat || '';
+            } else {
+                badgeRole.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold border bg-purple-50 text-purple-700 border-purple-200 capitalize";
+                badgeRole.textContent = 'Administrator';
+
+                secAdm.classList.remove('hidden');
+                secMhs.classList.add('hidden');
+                secDsn.classList.add('hidden');
+
+                if (mhsNama) mhsNama.required = false;
+                if (mhsProdi) mhsProdi.required = false;
+                if (mhsAngkatan) mhsAngkatan.required = false;
+                if (dsnNama) dsnNama.required = false;
+            }
+
+            openModal('modal-edit-user');
+        }
+
+        document.querySelectorAll('.btn-edit-user').forEach(btn => {
+            btn.addEventListener('click', function () {
+                try {
+                    const userData = JSON.parse(this.dataset.user);
+                    openEditUser(userData);
+                } catch (e) {
+                    console.error("Gagal memparsing data user:", e);
+                }
+            });
+        });
+
         window.addEventListener('click', function (e) {
             if (e.target.id === 'modal-tambah-user') closeModal('modal-tambah-user');
             if (e.target.id === 'modal-detail-user') closeModal('modal-detail-user');
+            if (e.target.id === 'modal-edit-user') closeModal('modal-edit-user');
         });
 
         window.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 closeModal('modal-tambah-user');
                 closeModal('modal-detail-user');
+                closeModal('modal-edit-user');
             }
         });
     </script>

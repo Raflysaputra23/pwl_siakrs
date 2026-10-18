@@ -151,6 +151,75 @@ class KelolaUserController extends Controller
 
     public function update(Request $request, $id)
     {
+        $user = User::findOrFail($id);
+
+        $request->validate([
+            'username' => 'required|min:3|unique:users,username,' . $user->id,
+            'password' => 'nullable|min:6',
+        ], [
+            'username.required' => 'Username wajib diisi',
+            'username.min' => 'Username minimal 3 karakter',
+            'username.unique' => 'Username sudah digunakan oleh akun lain',
+            'password.min' => 'Password baru minimal 6 karakter',
+        ]);
+
+        DB::transaction(function () use ($request, $user) {
+            $userUpdateData = ['username' => $request->username];
+            if ($request->filled('password')) {
+                $userUpdateData['password'] = $request->password;
+            }
+            $user->update($userUpdateData);
+
+            if ($user->role === 'mahasiswa') {
+                $mahasiswa = MahasiswaModel::where('id_user', $user->id)->first();
+                if ($mahasiswa) {
+                    $request->validate([
+                        'nama_lengkap' => 'required|string|max:200',
+                        'id_program_studi' => 'required',
+                        'angkatan' => 'required',
+                        'jenis_kelamin' => 'required|in:laki-laki,perempuan',
+                    ], [
+                        'nama_lengkap.required' => 'Nama lengkap mahasiswa wajib diisi',
+                        'id_program_studi.required' => 'Program studi wajib dipilih',
+                        'angkatan.required' => 'Tahun angkatan wajib diisi',
+                        'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih',
+                    ]);
+
+                    $mahasiswa->update([
+                        'nama_lengkap' => $request->nama_lengkap,
+                        'id_program_studi' => $request->id_program_studi,
+                        'dosen_pa_nip' => $request->filled('dosen_pa_nip') ? trim($request->dosen_pa_nip) : null,
+                        'angkatan' => $request->angkatan,
+                        'status' => $request->input('status_mhs') ?? $request->input('status') ?? $mahasiswa->status ?? 'aktif',
+                        'jenis_kelamin' => $request->jenis_kelamin,
+                        'email' => $request->input('email_mhs') ?? $request->input('email') ?: null,
+                        'no_telp' => $request->input('no_telp_mhs') ?? $request->input('no_telp') ?: null,
+                        'alamat' => $request->input('alamat_mhs') ?? $request->input('alamat') ?: null,
+                        'tempat_lahir' => $request->tempat_lahir ?: null,
+                        'tgl_lahir' => $request->tgl_lahir ?: null,
+                    ]);
+                }
+            } elseif ($user->role === 'dosen') {
+                $dosen = DosenModel::where('id_user', $user->id)->first();
+                if ($dosen) {
+                    $request->validate([
+                        'nama_dosen' => 'required|string|max:200',
+                    ], [
+                        'nama_dosen.required' => 'Nama dosen wajib diisi',
+                    ]);
+
+                    $dosen->update([
+                        'nama_lengkap' => $request->nama_dosen,
+                        'gelar_depan' => $request->gelar_depan ?: '',
+                        'gelar_belakang' => $request->gelar_belakang ?: '',
+                        'email' => $request->input('email_dosen') ?? $request->input('email') ?: null,
+                        'no_telp' => $request->input('no_telp_dosen') ?? $request->input('no_telp') ?: null,
+                        'alamat' => $request->input('alamat_dosen') ?? $request->input('alamat') ?: null,
+                    ]);
+                }
+            }
+        });
+
         return redirect()->back()->with('success', 'Data pengguna berhasil diperbarui');
     }
 

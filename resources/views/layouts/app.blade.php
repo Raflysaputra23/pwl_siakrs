@@ -24,10 +24,12 @@
         @else
             <main class="h-dvh grid grid-cols-1 lg:grid-cols-[300px_1fr]">
                 @include('layouts.sidebar')
-                <section class="overflow-x-hidden">
-                    @include('layouts.header')
-                    <div class="p-6">
-                        @yield('content')
+                <section class="overflow-x-hidden overflow-y-auto h-dvh flex flex-col justify-between">
+                    <div>
+                        @include('layouts.header')
+                        <div class="p-4 sm:p-6">
+                            @yield('content')
+                        </div>
                     </div>
                     @include('layouts.footer')
                 </section>

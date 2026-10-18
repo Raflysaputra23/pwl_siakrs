@@ -2,6 +2,26 @@
 
 @section('content')
     <div class="space-y-6">
+        @if (session('error'))
+            <div class="mb-5 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs text-red-700">
+                <x-lucide-alert-circle class="size-4 shrink-0 text-red-600 mt-0.5" />
+                <span>{{ session('error') }}</span>
+            </div>
+        @elseif(session('success'))
+            <div
+                class="mb-5 flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 p-3.5 text-xs text-green-700">
+                <x-lucide-alert-circle class="size-4 shrink-0 text-green-600 mt-0.5" />
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="mb-5 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs text-red-700">
+                <x-lucide-alert-circle class="size-4 shrink-0 text-red-600 mt-0.5" />
+                <span>Profile gagal disimpan, Silahkan cek kembali isian form anda</span>
+            </div>
+        @endif
+        
         <div
             class="relative overflow-hidden rounded-3xl bg-linear-to-r from-primary via-blue-600 to-indigo-700 p-6 sm:p-8 text-white shadow-lg">
             <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -26,7 +46,8 @@
                             </span>
                         </div>
                         <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                            {{ $mahasiswa->nama_lengkap ?? $user->username }}</h1>
+                            {{ $mahasiswa->nama_lengkap ?? $user->username }}
+                        </h1>
                         <p class="text-blue-100 text-sm font-mono flex flex-wrap items-center gap-x-3 gap-y-1">
                             <span>NPM: {{ $mahasiswa->nim ?? '-' }}</span>
                             <span class="opacity-60">·</span>
@@ -62,7 +83,8 @@
                         <div class="bg-slate-50 border border-slate-100 rounded-2xl p-3.5 space-y-1">
                             <p class="text-[11px] font-medium text-slate-500 uppercase">IPK Kumulatif</p>
                             <p class="text-2xl font-bold text-emerald-600">
-                                {{ number_format((float) ($dataMahasiswa->ipk ?? 0), 2) }}</p>
+                                {{ number_format((float) ($dataMahasiswa->ipk ?? 0), 2) }}
+                            </p>
                         </div>
 
                         <div class="bg-slate-50 border border-slate-100 rounded-2xl p-3.5 space-y-1">
@@ -87,11 +109,14 @@
                         </div>
                         <div class="min-w-0 space-y-0.5">
                             <h4 class="text-xs font-bold text-slate-900 truncate">
-                                {{ $mahasiswa->dosenPa ? $mahasiswa->dosenPa->nama : 'Belum Ditentukan' }}</h4>
+                                {{ $mahasiswa->dosenPa ? $mahasiswa->dosenPa->nama : 'Belum Ditentukan' }}
+                            </h4>
                             <p class="text-[11px] text-slate-500 font-mono">NIP:
-                                {{ $mahasiswa->dosenPa ? $mahasiswa->dosenPa->nip : '-' }}</p>
+                                {{ $mahasiswa->dosenPa ? $mahasiswa->dosenPa->nip : '-' }}
+                            </p>
                             <p class="text-[11px] text-slate-500 truncate">
-                                {{ $mahasiswa->dosenPa ? $mahasiswa->dosenPa->email : '-' }}</p>
+                                {{ $mahasiswa->dosenPa ? $mahasiswa->dosenPa->email : '-' }}
+                            </p>
                         </div>
                     </div>
 
@@ -130,9 +155,11 @@
                         Keamanan Akun
                     </h3>
                     <p class="text-xs text-slate-500 leading-relaxed">
-                        Perbarui kata sandi akun portal akademik Anda secara berkala untuk menjaga keamanan data perkuliahan.
+                        Perbarui kata sandi akun portal akademik Anda secara berkala untuk menjaga keamanan data
+                        perkuliahan.
                     </p>
-                    <button type="button" onclick="openPasswordModal()" class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2 text-xs font-semibold shadow-xs transition cursor-pointer">
+                    <button type="button" onclick="openPasswordModal()"
+                        class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2 text-xs font-semibold shadow-xs transition cursor-pointer">
                         <x-lucide-key-round class="size-3.5" />
                         Ganti Kata Sandi Akun
                     </button>
@@ -161,7 +188,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                               NPM
+                                NPM
                             </label>
                             <div class="relative">
                                 <x-lucide-id-card
@@ -319,11 +346,14 @@
         </div>
 
         {{-- Modal Ganti Password --}}
-        <div id="modal-password" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 transition-all duration-200 hidden">
-            <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+        <div id="modal-password"
+            class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 transition-all duration-200 hidden">
+            <div
+                class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
                 <div class="p-6 border-b border-slate-100 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                             <x-lucide-key-round class="size-5" />
                         </div>
                         <div>
@@ -331,12 +361,14 @@
                             <p class="text-xs text-slate-500">Perbarui kata sandi akun mahasiswa Anda</p>
                         </div>
                     </div>
-                    <button type="button" onclick="closePasswordModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition cursor-pointer">
+                    <button type="button" onclick="closePasswordModal()"
+                        class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition cursor-pointer">
                         <x-lucide-x class="size-4" />
                     </button>
                 </div>
 
-                <form id="form-change-password" onsubmit="event.preventDefault(); submitChangePassword();" class="p-6 space-y-4">
+                <form id="form-change-password" onsubmit="event.preventDefault(); submitChangePassword();"
+                    class="p-6 space-y-4">
                     <div id="password-alert" class="hidden p-3 rounded-xl text-xs font-medium"></div>
 
                     <div class="space-y-1.5">
@@ -345,7 +377,8 @@
                         </label>
                         <div class="relative">
                             <x-lucide-lock class="size-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                            <input type="password" id="current_password" required placeholder="Masukkan kata sandi lama" class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-white text-sm text-slate-800 transition focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4" />
+                            <input type="password" id="current_password" required placeholder="Masukkan kata sandi lama"
+                                class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-white text-sm text-slate-800 transition focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4" />
                         </div>
                     </div>
 
@@ -355,7 +388,8 @@
                         </label>
                         <div class="relative">
                             <x-lucide-key class="size-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                            <input type="password" id="new_password" required placeholder="Minimal 6 karakter" class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-white text-sm text-slate-800 transition focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4" />
+                            <input type="password" id="new_password" required placeholder="Minimal 6 karakter"
+                                class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-white text-sm text-slate-800 transition focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4" />
                         </div>
                     </div>
 
@@ -364,16 +398,20 @@
                             Konfirmasi Kata Sandi Baru <span class="text-rose-500">*</span>
                         </label>
                         <div class="relative">
-                            <x-lucide-check-check class="size-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                            <input type="password" id="confirm_password" required placeholder="Ulangi kata sandi baru" class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-white text-sm text-slate-800 transition focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4" />
+                            <x-lucide-check-check
+                                class="size-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                            <input type="password" id="confirm_password" required placeholder="Ulangi kata sandi baru"
+                                class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-white text-sm text-slate-800 transition focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4" />
                         </div>
                     </div>
 
                     <div class="pt-2 flex items-center justify-end gap-2.5">
-                        <button type="button" onclick="closePasswordModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-semibold transition cursor-pointer">
+                        <button type="button" onclick="closePasswordModal()"
+                            class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-semibold transition cursor-pointer">
                             Batal
                         </button>
-                        <button type="submit" id="btn-submit-password" class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-semibold shadow-sm transition flex items-center gap-2 cursor-pointer">
+                        <button type="submit" id="btn-submit-password"
+                            class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-semibold shadow-sm transition flex items-center gap-2 cursor-pointer">
                             <x-lucide-check class="size-4" />
                             <span>Simpan Kata Sandi</span>
                         </button>
@@ -519,24 +557,24 @@
                     confirm_password: confirmPassword
                 })
             })
-            .then(res => res.json())
-            .then(data => {
-                btnSubmit.disabled = false;
-                btnSubmit.innerHTML = originalText;
-                if (data.success) {
-                    showPasswordAlert(data.message, 'success');
-                    setTimeout(() => {
-                        closePasswordModal();
-                    }, 1300);
-                } else {
-                    showPasswordAlert(data.message || 'Gagal mengubah kata sandi', 'error');
-                }
-            })
-            .catch(err => {
-                btnSubmit.disabled = false;
-                btnSubmit.innerHTML = originalText;
-                showPasswordAlert('Terjadi kesalahan koneksi atau server', 'error');
-            });
+                .then(res => res.json())
+                .then(data => {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = originalText;
+                    if (data.success) {
+                        showPasswordAlert(data.message, 'success');
+                        setTimeout(() => {
+                            closePasswordModal();
+                        }, 1300);
+                    } else {
+                        showPasswordAlert(data.message || 'Gagal mengubah kata sandi', 'error');
+                    }
+                })
+                .catch(err => {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = originalText;
+                    showPasswordAlert('Terjadi kesalahan koneksi atau server', 'error');
+                });
         }
 
         function showPasswordAlert(message, type) {

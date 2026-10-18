@@ -52,6 +52,10 @@ class KrsController extends Controller
 
         $krsMahasiswa = null;
         $krsSelectedKelasIds = [];
+        $totalSksDb = 0;
+        $totalMkDb = 0;
+        $selectedItemsPayload = [];
+
         if ($dataMahasiswa) {
             $krsMahasiswa = KrsMahasiswaModel::where('id_data_mahasiswa', $dataMahasiswa->id)
                 ->with('krsItems.kelas.mataKuliah')
@@ -60,13 +64,35 @@ class KrsController extends Controller
 
             if ($krsMahasiswa) {
                 $krsSelectedKelasIds = $krsMahasiswa->krsItems->pluck('id_kelas')->toArray();
+                $totalMkDb = $krsMahasiswa->krsItems->count();
+                $totalSksDb = $krsMahasiswa->total_sks ?? 0;
+
+                foreach ($krsMahasiswa->krsItems as $item) {
+                    if ($item->kelas && $item->kelas->mataKuliah) {
+                        $selectedItemsPayload[] = [
+                            'id' => $item->kelas->id,
+                            'kode' => $item->kelas->mataKuliah->kode_mk,
+                            'nama' => $item->kelas->mataKuliah->nama_mk,
+                            'sks' => (int) $item->kelas->mataKuliah->sks,
+                        ];
+                    }
+                }
+            } else {
+                $totalSksDb = $dataMahasiswa->total_sks ?? 0;
             }
         }
 
-        $kelasTersedia = KelasModel::with(['mataKuliah.programStudi', 'dosenKoor'])
+        $kelasQuery = KelasModel::with(['mataKuliah.programStudi', 'dosenKoor'])
             ->orderBy('hari', 'asc')
-            ->orderBy('jam_mulai', 'asc')
-            ->get()
+            ->orderBy('jam_mulai', 'asc');
+
+        if ($mahasiswa && !empty($mahasiswa->id_program_studi)) {
+            $kelasQuery->whereHas('mataKuliah', function ($q) use ($mahasiswa) {
+                $q->where('id_program_studi', $mahasiswa->id_program_studi);
+            });
+        }
+
+        $kelasTersedia = $kelasQuery->get()
             ->map(function ($kelas) {
                 $kelas->terisi = KrsModel::where('id_kelas', $kelas->id)
                     ->whereHas('krsMahasiswa', function ($q) {
@@ -89,6 +115,9 @@ class KrsController extends Controller
             'statusKrs' => $statusKrs,
             'semesterAktif' => $semesterAktif,
             'sksMaks' => $sksMaks,
+            'totalSksDb' => $totalSksDb,
+            'totalMkDb' => $totalMkDb,
+            'selectedItemsPayload' => $selectedItemsPayload,
         ];
 
         return view('krs.mahasiswa.krs', $data);

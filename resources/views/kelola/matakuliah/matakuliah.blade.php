@@ -357,7 +357,7 @@
                                             <div class="w-28 mx-auto bg-slate-100 rounded-full h-1.5 overflow-hidden">
                                                 <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 100%"></div>
                                             </div>
-                                            <span class="text-[10px] font-semibold text-emerald-600">Kapasitas Penuh</span>
+                                            <span class="text-[10px] font-semibold text-emerald-600">Kapasitas Kelas</span>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">

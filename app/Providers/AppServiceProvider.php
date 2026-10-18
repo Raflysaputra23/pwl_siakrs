@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\AkademikModel;
 use App\Services\SidebarMenu;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -23,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('layouts.sidebar', function($view) {
             $view->with('menus', SidebarMenu::getMenus());
+            $view->with('tahun_ajaran', AkademikModel::getAktif());
         });
     }
 }

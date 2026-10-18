@@ -14,7 +14,7 @@
                 <span>{{ session('success') }}</span>
             </div>
         @endif
-        
+
         @if($errors->any())
             <div class="mb-5 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs text-red-700">
                 <x-lucide-alert-circle class="size-4 shrink-0 text-red-600 mt-0.5" />
@@ -44,7 +44,8 @@
                     class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:text-slate-900 cursor-pointer">
                     <x-lucide-building-2 class="size-4" />
                     Fakultas
-                    <span class="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-700">{{ count($fakultas) }}</span>
+                    <span
+                        class="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-700">{{ count($fakultas) }}</span>
                 </button>
             </div>
         </div>
@@ -73,7 +74,8 @@
             <div class="flex items-center justify-between rounded-2xl bg-surface shadow-sm border border-slate-200 p-5">
                 <div class="space-y-1">
                     <h2 class="text-xs text-slate-500 font-medium">Mahasiswa Terdaftar</h2>
-                    <p class="text-2xl font-bold text-emerald-600">{{ number_format($totalMahasiswa ?? 0, 0, ',', '.') }}</p>
+                    <p class="text-2xl font-bold text-emerald-600">{{ number_format($totalMahasiswa ?? 0, 0, ',', '.') }}
+                    </p>
                     <p class="text-[11px] text-slate-400">Di seluruh prodi</p>
                 </div>
                 <div class="w-11 h-11 rounded-xl shadow-sm bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -154,7 +156,8 @@
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-2">
                                             <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                                            <span class="font-medium text-xs text-slate-800">{{ $p->fakultas->nama_fakultas ?? 'Fakultas Belum Terdaftar' }}</span>
+                                            <span
+                                                class="font-medium text-xs text-slate-800">{{ $p->fakultas->nama_fakultas ?? 'Fakultas Belum Terdaftar' }}</span>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-center">
@@ -187,7 +190,8 @@
                                         <div class="flex flex-col items-center justify-center">
                                             <x-lucide-school class="size-10 mb-2 text-slate-300" />
                                             <p class="text-sm font-semibold text-slate-600">Belum ada Program Studi</p>
-                                            <p class="text-xs text-slate-400 mt-0.5">Silakan tambahkan data program studi baru melalui tombol di atas.</p>
+                                            <p class="text-xs text-slate-400 mt-0.5">Silakan tambahkan data program studi baru
+                                                melalui tombol di atas.</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -297,7 +301,8 @@
                                         <div class="flex flex-col items-center justify-center">
                                             <x-lucide-building-2 class="size-10 mb-2 text-slate-300" />
                                             <p class="text-sm font-semibold text-slate-600">Belum ada Fakultas</p>
-                                            <p class="text-xs text-slate-400 mt-0.5">Silakan tambahkan data fakultas baru melalui tombol di atas.</p>
+                                            <p class="text-xs text-slate-400 mt-0.5">Silakan tambahkan data fakultas baru
+                                                melalui tombol di atas.</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -342,10 +347,7 @@
                 </button>
             </div>
 
-            <form
-                action="{{ route('kelola.prodi.store') }}"
-                method="POST"
-                class="space-y-4">
+            <form action="{{ route('kelola.prodi.store') }}" method="POST" class="space-y-4">
                 @csrf
 
                 <input type="hidden" name="tab" value="prodi">
@@ -422,11 +424,7 @@
                 </button>
             </div>
 
-            <form
-                id="form-edit-prodi"
-                action=""
-                method="POST"
-                class="space-y-4">
+            <form id="form-edit-prodi" action="" method="POST" class="space-y-4">
                 @csrf
                 @method('PUT')
 
@@ -504,10 +502,7 @@
                 </button>
             </div>
 
-            <form
-                action="{{ route('kelola.prodi.store') }}"
-                method="POST"
-                class="space-y-4">
+            <form action="{{ route('kelola.prodi.store') }}" method="POST" class="space-y-4">
                 @csrf
 
                 <input type="hidden" name="tab" value="fakultas">
@@ -572,11 +567,7 @@
                 </button>
             </div>
 
-            <form
-                id="form-edit-fakultas"
-                action=""
-                method="POST"
-                class="space-y-4">
+            <form id="form-edit-fakultas" action="" method="POST" class="space-y-4">
                 @csrf
                 @method('PUT')
 

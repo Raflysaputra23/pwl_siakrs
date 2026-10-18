@@ -16,8 +16,9 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('username', 100)->nullable();
             $table->string('password')->nullable();
-            $table->enum('role', ['dosen','mahasiswa'])->default('mahasiswa');
-            $table->timestamp('created_at');
+            $table->enum('role', ['dosen','mahasiswa','admin'])->default('mahasiswa');
+            $table->rememberToken();
+            $table->timestamps();
         });
     }
 

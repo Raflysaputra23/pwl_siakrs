@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('semester')->nullable();
             $table->decimal('ipk', 3)->nullable();
             $table->integer('total_sks')->nullable();
-            $table->timestamp('created_at');
+            $table->timestamps();
         });
     }
 

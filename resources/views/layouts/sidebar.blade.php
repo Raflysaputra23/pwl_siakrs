@@ -17,77 +17,31 @@
         </div>
         <div class="space-y-2 overflow-y-auto">
             <h2 class="font-semibold text-xs text-slate-600">MENU UTAMA</h2>
-            <a href="{{ route('dashboard') }}" class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-slate-600 {{ request()->is('dashboard') || request()->is('/') ? 'bg-primary text-white' : '' }}">
-                <x-lucide-layout-grid-circles class="size-5" />
-                <p class="flex-1 {{ request()->is('dashboard') || request()->is('/') ? 'font-semibold' : 'font-regular' }}">
-                    Dashboard
-                </p>
-                @if (request()->is('dashboard') || request()->is('/'))
-                    <x-lucide-arrow-right class="size-5" />
+            @foreach ($menus as $menu)
+                @if (in_array(Auth::user()->role, $menu['roles']))
+                    <a href="{{ $menu['url'] }}"
+                        class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-slate-600 {{ $menu['is_active'] ? 'bg-primary text-white' : '' }}">
+                        @svg('lucide-' . $menu['icon'], 'size-5')
+                        <p class="flex-1 {{ $menu['is_active'] ? 'font-semibold' : 'font-regular' }}">
+                            {{ $menu['title'] }}
+                        </p>
+                        @if ($menu['is_active'])
+                            <x-lucide-arrow-right class="size-5" />
+                        @endif
+                    </a>
                 @endif
-            </a>
-            <a href="{{ route('krs.mahasiswa') }}" class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-slate-600 {{ request()->is('krs') ? 'bg-primary text-white' : '' }}">
-                <x-lucide-book class="size-5" />
-                <p class="flex-1 {{ request()->is('krs') ? 'font-semibold' : 'font-regular' }}">
-                    Krs
-                </p>
-                @if (request()->is('krs'))
-                    <x-lucide-arrow-right class="size-5" />
-                @endif
-            </a>
-            <a href="{{ route('jadwal.mahasiswa') }}" class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-slate-600 {{ request()->is('jadwal') ? 'bg-primary text-white' : '' }}">
-                <x-lucide-calendar class="size-5" />
-                <p class="flex-1 {{ request()->is('jadwal') ? 'font-semibold' : 'font-regular' }}">
-                    Jadwal
-                </p>
-                @if (request()->is('jadwal'))
-                    <x-lucide-arrow-right class="size-5" />
-                @endif
-            </a>
-            <a href="{{ route('kelola.user') }}" class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-slate-600 {{ request()->is('kelola/user') ? 'bg-primary text-white' : '' }}">
-                <x-lucide-users class="size-5" />
-                <p class="flex-1 {{ request()->is('kelola/user') ? 'font-semibold' : 'font-regular' }}">
-                    Kelola User
-                </p>
-                @if (request()->is('kelola/user'))
-                    <x-lucide-arrow-right class="size-5" />
-                @endif
-            </a>
-            <a href="{{ route('kelola.matakuliah') }}" class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-slate-600 {{ request()->is('kelola/matakuliah') ? 'bg-primary text-white' : '' }}">
-                <x-lucide-library-big class="size-5" />
-                <p class="flex-1 {{ request()->is('kelola.matakuliah') ? 'font-semibold' : 'font-regular' }}">
-                    Kelola Matakuliah
-                </p>
-                @if (request()->is('kelola/matakuliah'))
-                    <x-lucide-arrow-right class="size-5" />
-                @endif
-            </a>
-            <a href="{{ route('kelola.akademik') }}" class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-slate-600 {{ request()->is('kelola/akademik') ? 'bg-primary text-white' : '' }}">
-                <x-lucide-calendar class="size-5" />
-                <p class="flex-1 {{ request()->is('kelola/akademik') ? 'font-semibold' : 'font-regular' }}">
-                    Kelola Akademik
-                </p>
-                @if (request()->is('kelola/akademik'))
-                    <x-lucide-arrow-right class="size-5" />
-                @endif
-            </a>
-            <a href="{{ route('kelola.prodi') }}" class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-slate-600 {{ request()->is('kelola/prodi') ? 'bg-primary text-white' : '' }}">
-                <x-lucide-school class="size-5" />
-                <p class="flex-1 {{ request()->is('kelola/prodi') ? 'font-semibold' : 'font-regular' }}">
-                    Kelola Prodi
-                </p>
-                @if (request()->is('kelola/prodi'))
-                    <x-lucide-arrow-right class="size-5" />
-                @endif
-            </a>
+            @endforeach
         </div>
     </div>
     <div class="flex justify-center mt-auto border-t border-slate-200 py-3 px-4">
-         <a href="{{ route('logout') }}" class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-danger bg-danger/15 border border-danger/30">
-            <x-lucide-log-out class="size-5" />
-            <p class="flex-1 font-semibold">
+        <form action="{{ route('auth.logout') }}" method="post" class="w-full">
+            @csrf
+
+            <button type="submit"
+                class="w-full px-3 py-2.5 flex items-center rounded-2xl gap-3 text-danger bg-danger/15 border border-danger/30 cursor-pointer">
+                <x-lucide-log-out class="size-5" />
                 Logout
-            </p>
-        </a>
+            </button>
+        </form>
     </div>
 </nav>

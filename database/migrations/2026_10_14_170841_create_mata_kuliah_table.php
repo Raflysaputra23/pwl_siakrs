@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('jenis', ['wajib','peminatan'])->nullable();
             $table->integer('semester')->nullable();
             $table->integer('sks')->nullable();
-            $table->timestamp('created_at');
+            $table->timestamps();
         });
     }
 

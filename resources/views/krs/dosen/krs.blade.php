@@ -1,397 +1,299 @@
 @extends('layouts.app')
 
 @section('content')
-
-@php
-    $pengajuan = [
-        ['2417051001', 'Aditya Pratama', 'Ilmu Komputer', 'A', 20, 'Menunggu'],
-        ['2417051008', 'Citra Lestari', 'Ilmu Komputer', 'A', 22, 'Menunggu'],
-        ['2417051012', 'Dimas Saputra', 'Ilmu Komputer', 'B', 21, 'Disetujui'],
-        ['2417051020', 'Nadia Putri', 'Ilmu Komputer', 'A', 18, 'Perlu Revisi'],
-        ['2417051045', 'Muhamad Arif', 'Ilmu Komputer', 'B', 22, 'Menunggu'],
-        ['2417051051', 'Rizky Ramadhan', 'Ilmu Komputer', 'A', 20, 'Disetujui'],
-        ['2417051055', 'Siti Amelia', 'Ilmu Komputer', 'B', 19, 'Menunggu'],
-    ];
-
-    $totalPengajuan = count($pengajuan);
-    $totalMenunggu = count(array_filter($pengajuan, fn($mhs) => $mhs[5] === 'Menunggu'));
-    $totalDisetujui = count(array_filter($pengajuan, fn($mhs) => $mhs[5] === 'Disetujui'));
-    $totalRevisi = count(array_filter($pengajuan, fn($mhs) => $mhs[5] === 'Perlu Revisi'));
-
-    $field = 'w-full rounded-xl border border-slate-200 bg-surface px-3 py-2.5 text-xs font-medium text-slate-700 outline-transparent transition focus:border-primary focus:outline-4 focus:outline-primary/10';
-@endphp
-
-<div class="dosen-krs space-y-6">
-
-    <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <div class="mb-2 flex items-center gap-2 text-xs font-medium text-slate-400">
                 <span>Akademik</span>
                 <span>/</span>
                 <span>Persetujuan KRS</span>
             </div>
-
-            <h1 class="text-2xl font-bold text-slate-900">
-                Persetujuan KRS Mahasiswa
-            </h1>
-
-            <p class="mt-2 text-sm text-slate-500">
-                Kelola dan tinjau pengajuan KRS mahasiswa.
-            </p>
+            <div class="flex items-center gap-3">
+                <div class="size-10 text-white rounded-xl bg-primary shadow-sm shadow-primary/25 flex justify-center items-center shrink-0">
+                    <x-lucide-clipboard-check class="size-5" />
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900">Persetujuan KRS Mahasiswa</h1>
+                    <p class="text-xs text-slate-500 mt-0.5">Tinjau dan verifikasi rencana studi (KRS) mahasiswa bimbingan akademik Anda.</p>
+                </div>
+            </div>
         </div>
 
-        <span class="inline-flex items-center gap-1.5 self-start rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
-            <span class="size-2 rounded-full bg-emerald-500"></span>
-            Semester Ganjil 2026/2027
-        </span>
+        <div class="flex items-center gap-2 self-start sm:self-auto">
+            <span class="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
+                <span class="size-2 rounded-full bg-emerald-500"></span>
+                Semester Ganjil 2026/2027
+            </span>
+        </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-
-        <div class="flex items-center justify-between rounded-2xl border border-slate-200 bg-surface p-5 shadow-sm">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <div class="flex items-center justify-between rounded-2xl bg-surface shadow-sm border border-slate-200 p-5">
             <div class="space-y-1">
-                <p class="text-xs font-medium text-slate-500">
-                    Total Pengajuan
-                </p>
-
-                <h2 id="totalPengajuan" class="mt-3 text-3xl font-bold text-slate-900">
-                    {{ $totalPengajuan }}
-                </h2>
-
-                <p class="text-xs text-slate-400">
-                    Pengajuan mahasiswa
-                </p>
+                <p class="text-xs text-slate-500 font-medium">Total Pengajuan</p>
+                <h2 id="totalPengajuan" class="text-2xl font-bold text-slate-900">{{ $stats['total'] ?? ($totalPengajuan ?? 0) }}</h2>
+                <p class="text-xs text-slate-400">Mahasiswa bimbingan</p>
             </div>
-
-            <div class="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <div class="size-11 rounded-xl shadow-sm bg-primary/10 text-primary flex items-center justify-center shrink-0">
                 <x-lucide-clipboard-list class="size-5" />
             </div>
         </div>
 
-        <div class="flex items-center justify-between rounded-2xl border border-slate-200 bg-surface p-5 shadow-sm">
+        <div class="flex items-center justify-between rounded-2xl bg-surface shadow-sm border border-slate-200 p-5">
             <div class="space-y-1">
-                <p class="text-xs font-medium text-slate-500">
-                    Menunggu Persetujuan
-                </p>
-
-                <h2 id="totalMenunggu" class="mt-3 text-3xl font-bold text-slate-900">
-                    {{ $totalMenunggu }}
-                </h2>
-
-                <p class="text-xs text-slate-400">
-                    Perlu ditinjau
-                </p>
+                <p class="text-xs text-slate-500 font-medium">Menunggu Persetujuan</p>
+                <h2 id="totalMenunggu" class="text-2xl font-bold text-amber-600">{{ $stats['menunggu'] ?? ($totalMenunggu ?? 0) }}</h2>
+                <p class="text-xs text-slate-400">Perlu ditinjau Dosen PA</p>
             </div>
-
-            <div class="flex size-11 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+            <div class="size-11 rounded-xl shadow-sm bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
                 <x-lucide-clock class="size-5" />
             </div>
         </div>
 
-        <div class="flex items-center justify-between rounded-2xl border border-slate-200 bg-surface p-5 shadow-sm">
+        <div class="flex items-center justify-between rounded-2xl bg-surface shadow-sm border border-slate-200 p-5">
             <div class="space-y-1">
-                <p class="text-xs font-medium text-slate-500">
-                    Disetujui
-                </p>
-
-                <h2 id="totalDisetujui" class="mt-3 text-3xl font-bold text-slate-900">
-                    {{ $totalDisetujui }}
-                </h2>
-
-                <p class="text-xs text-slate-400">
-                    KRS telah disetujui
-                </p>
+                <p class="text-xs text-slate-500 font-medium">Telah Disetujui</p>
+                <h2 id="totalDisetujui" class="text-2xl font-bold text-emerald-600">{{ $stats['disetujui'] ?? ($totalDisetujui ?? 0) }}</h2>
+                <p class="text-xs text-slate-400">KRS siap cetak</p>
             </div>
-
-            <div class="flex size-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-                <x-lucide-check-circle class="size-5" />
+            <div class="size-11 rounded-xl shadow-sm bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <x-lucide-check-circle-2 class="size-5" />
             </div>
         </div>
 
-        <div class="flex items-center justify-between rounded-2xl border border-slate-200 bg-surface p-5 shadow-sm">
+        <div class="flex items-center justify-between rounded-2xl bg-surface shadow-sm border border-slate-200 p-5">
             <div class="space-y-1">
-                <p class="text-xs font-medium text-slate-500">
-                    Perlu Revisi
-                </p>
-
-                <h2 id="totalRevisi" class="mt-3 text-3xl font-bold text-slate-900">
-                    {{ $totalRevisi }}
-                </h2>
-
-                <p class="text-xs text-slate-400">
-                    Menunggu perbaikan
-                </p>
+                <p class="text-xs text-slate-500 font-medium">Perlu Revisi / Ditolak</p>
+                <h2 id="totalRevisi" class="text-2xl font-bold text-red-600">{{ $stats['ditolak'] ?? ($totalRevisi ?? 0) }}</h2>
+                <p class="text-xs text-slate-400">Menunggu perbaikan</p>
             </div>
-
-            <div class="flex size-11 items-center justify-center rounded-xl bg-red-50 text-red-600">
+            <div class="size-11 rounded-xl shadow-sm bg-red-50 text-red-600 flex items-center justify-center shrink-0">
                 <x-lucide-alert-circle class="size-5" />
             </div>
         </div>
-
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-surface shadow-sm">
-
         <div class="space-y-4 border-b border-slate-100 p-5">
-            <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-base font-bold text-slate-900">
-                        Daftar Pengajuan KRS
-                    </h2>
-
-                    <p class="mt-1 text-xs text-slate-500">
-                        Lihat informasi mahasiswa dan status pengajuannya.
-                    </p>
+                    <h2 class="text-base font-bold text-slate-900">Daftar Pengajuan Rencana Studi</h2>
+                    <p class="mt-1 text-xs text-slate-500">Daftar mahasiswa bimbingan akademik yang mengajukan KRS untuk semester aktif.</p>
                 </div>
 
-                <div class="flex flex-col gap-2 sm:flex-row">
-                    <div class="relative min-w-0 sm:w-56">
+                <div class="flex flex-col sm:flex-row gap-2.5">
+                    <div class="relative min-w-0 sm:w-64">
                         <x-lucide-search class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-
                         <input
                             type="text"
                             id="cariMahasiswa"
-                            class="{{ $field }} pl-9"
-                            placeholder="Cari nama atau NPM..."
+                            placeholder="Cari nama, NPM, prodi..."
+                            class="w-full rounded-xl border border-slate-200 bg-white pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all"
                         >
                     </div>
 
                     <select
                         id="filterStatus"
-                        class="{{ $field }} sm:w-40"
+                        class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all sm:w-40"
                     >
                         <option value="">Semua Status</option>
-                        <option value="Menunggu">Menunggu</option>
-                        <option value="Disetujui">Disetujui</option>
-                        <option value="Perlu Revisi">Perlu Revisi</option>
+                        <option value="menunggu">Menunggu</option>
+                        <option value="disetujui">Disetujui</option>
+                        <option value="ditolak">Ditolak / Revisi</option>
                     </select>
+
+                    <button
+                        type="button"
+                        id="btnResetFilter"
+                        class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
+                        title="Atur Ulang Filter"
+                    >
+                        <x-lucide-rotate-ccw class="size-3.5" />
+                        <span>Reset</span>
+                    </button>
                 </div>
             </div>
         </div>
 
         <div class="overflow-x-auto">
             <table class="w-full min-w-[850px] border-collapse text-left text-sm">
-
                 <thead>
                     <tr class="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                        <th class="px-5 py-4">
-                            Mahasiswa
-                        </th>
-
-                        <th class="px-5 py-4">
-                            Program Studi
-                        </th>
-
-                        <th class="px-4 py-4">
-                            Kelas
-                        </th>
-
-                        <th class="px-4 py-4">
-                            Total SKS
-                        </th>
-
-                        <th class="px-5 py-4">
-                            Status
-                        </th>
-
-                        <th class="px-5 py-4 text-center">
-                            Aksi
-                        </th>
+                        <th class="px-5 py-4">Mahasiswa</th>
+                        <th class="px-5 py-4">Program Studi</th>
+                        <th class="px-4 py-4 text-center">Semester / Kelas</th>
+                        <th class="px-4 py-4 text-center">Beban SKS</th>
+                        <th class="px-5 py-4 text-center">Status</th>
+                        <th class="px-5 py-4 text-center">Aksi</th>
                     </tr>
                 </thead>
 
                 <tbody id="daftarMahasiswa" class="divide-y divide-slate-100">
-
-                    @foreach ($pengajuan as $mhs)
+                    @forelse ($pengajuanList ?? ($pengajuan ?? []) as $mhs)
+                        @php
+                            $idKrs = is_object($mhs) ? ($mhs->id ?? '') : ($mhs['id'] ?? '');
+                            $npm = is_object($mhs) ? ($mhs->mahasiswa->npm ?? $mhs->mahasiswa->nim ?? $mhs->npm ?? '-') : ($mhs['npm'] ?? $mhs[0] ?? '-');
+                            $nama = is_object($mhs) ? ($mhs->mahasiswa->nama ?? $mhs->mahasiswa->nama_lengkap ?? $mhs->nama ?? '-') : ($mhs['nama'] ?? $mhs[1] ?? '-');
+                            $prodi = is_object($mhs) ? ($mhs->mahasiswa->programStudi->nama_prodi ?? $mhs->prodi ?? '-') : ($mhs['prodi'] ?? $mhs[2] ?? '-');
+                            $kelas = is_object($mhs) ? ($mhs->mahasiswa->kelas ?? $mhs->kelas ?? 'A') : ($mhs['kelas'] ?? $mhs[3] ?? '-');
+                            $semester = is_object($mhs) ? ($mhs->dataMahasiswa->semester ?? $mhs->mahasiswa->semester ?? $mhs->semester ?? '1') : ($mhs['semester'] ?? '-');
+                            $totalSks = is_object($mhs) ? ($mhs->total_sks ?? $mhs->sks ?? 0) : ($mhs['sks'] ?? $mhs[4] ?? 0);
+                            $rawStatus = is_object($mhs) ? ($mhs->status ?? 'menunggu') : ($mhs['status'] ?? $mhs[5] ?? 'menunggu');
+                            $status = strtolower($rawStatus);
+                        @endphp
 
                         <tr
-                            class="student-row transition hover:bg-slate-50/70"
-                            data-npm="{{ $mhs[0] }}"
-                            data-nama="{{ $mhs[1] }}"
-                            data-prodi="{{ $mhs[2] }}"
-                            data-kelas="{{ $mhs[3] }}"
-                            data-sks="{{ $mhs[4] }}"
-                            data-status="{{ $mhs[5] }}"
+                            class="student-row hover:bg-slate-50/70 transition"
+                            data-id="{{ $idKrs }}"
+                            data-npm="{{ $npm }}"
+                            data-nama="{{ $nama }}"
+                            data-prodi="{{ $prodi }}"
+                            data-kelas="{{ $kelas }}"
+                            data-semester="{{ $semester }}"
+                            data-sks="{{ $totalSks }}"
+                            data-status="{{ $status }}"
+                            data-search="{{ strtolower($npm . ' ' . $nama . ' ' . $prodi . ' ' . $kelas) }}"
                         >
-
                             <td class="px-5 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
-                                        {{ strtoupper(substr($mhs[1], 0, 1)) }}
+                                    <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary">
+                                        {{ strtoupper(substr($nama, 0, 1)) }}
                                     </div>
-
                                     <div>
-                                        <p class="font-bold text-slate-900">
-                                            {{ $mhs[1] }}
-                                        </p>
-
-                                        <p class="mt-1 font-mono text-xs text-slate-500">
-                                            {{ $mhs[0] }}
-                                        </p>
+                                        <p class="font-bold text-slate-900">{{ $nama }}</p>
+                                        <p class="mt-0.5 font-mono text-xs text-slate-500">{{ $npm }}</p>
                                     </div>
                                 </div>
                             </td>
 
                             <td class="px-5 py-4">
-                                <p class="text-xs font-medium text-slate-700">
-                                    {{ $mhs[2] }}
-                                </p>
+                                <p class="text-xs font-medium text-slate-700">{{ $prodi }}</p>
                             </td>
 
-                            <td class="px-4 py-4">
-                                <span class="inline-flex rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700">
-                                    {{ $mhs[3] }}
+                            <td class="whitespace-nowrap px-4 py-4 text-center">
+                                <span class="rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
+                                    Kelas {{ $kelas }} @if($semester !== '-') &bull; Smt {{ $semester }} @endif
                                 </span>
                             </td>
 
-                            <td class="whitespace-nowrap px-4 py-4">
-                                <span class="text-xs font-semibold text-slate-800">
-                                    {{ $mhs[4] }} SKS
-                                </span>
+                            <td class="whitespace-nowrap px-4 py-4 text-center">
+                                <span class="text-xs font-semibold text-slate-800">{{ $totalSks }} SKS</span>
                             </td>
 
-                            <td class="px-5 py-4">
-                                <span class="status-badge inline-flex items-center rounded-xl px-3 py-1.5 text-xs font-semibold
-                                    {{ $mhs[5] === 'Disetujui' ? 'bg-emerald-50 text-emerald-700' : '' }}
-                                    {{ $mhs[5] === 'Menunggu' ? 'bg-amber-50 text-amber-700' : '' }}
-                                    {{ $mhs[5] === 'Perlu Revisi' ? 'bg-red-50 text-red-700' : '' }}">
-                                    {{ $mhs[5] }}
-                                </span>
+                            <td class="whitespace-nowrap px-5 py-4 text-center">
+                                @if ($status === 'disetujui')
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        Disetujui
+                                    </span>
+                                @elseif ($status === 'menunggu')
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                        Menunggu
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
+                                        Perlu Revisi
+                                    </span>
+                                @endif
                             </td>
 
                             <td class="whitespace-nowrap px-5 py-4 text-center">
                                 <div class="flex items-center justify-center gap-2">
                                     <button
                                         type="button"
-                                        class="detailKrs inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-surface px-3 py-2.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50"
+                                        onclick="bukaModalDetail(this.closest('tr'))"
+                                        class="inline-flex items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-xs cursor-pointer"
                                     >
-                                        <x-lucide-eye class="size-4" />
-                                        Detail
+                                        <x-lucide-eye class="size-3.5 text-slate-400" />
+                                        <span>Detail</span>
                                     </button>
 
-                                    <button
-                                        type="button"
-                                        class="setujuiKrs inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-primary px-3 py-2.5 text-xs font-bold text-white shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
-                                        {{ $mhs[5] !== 'Menunggu' ? 'disabled' : '' }}
-                                    >
-                                        <x-lucide-check class="size-4" />
-                                        Setujui
-                                    </button>
+                                    @if ($status === 'menunggu')
+                                        <button
+                                            type="button"
+                                            onclick="konfirmasiSetujui(this.closest('tr'))"
+                                            class="inline-flex items-center justify-center gap-1 rounded-xl bg-primary hover:bg-primary-hover px-3 py-1.5 text-xs font-semibold text-white transition shadow-xs shadow-primary/20 cursor-pointer"
+                                        >
+                                            <x-lucide-check class="size-3.5" />
+                                            <span>Setujui</span>
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
-
                         </tr>
+                    @empty
+                        <tr id="emptyRow">
+                            <td colspan="6" class="px-5 py-12 text-center">
+                                <x-lucide-clipboard-check class="mx-auto size-9 text-slate-300" />
+                                <p class="mt-3 text-sm font-semibold text-slate-700">Belum Ada Pengajuan KRS</p>
+                                <p class="mt-1 text-xs text-slate-400">Data pengajuan KRS dari mahasiswa bimbingan akademik akan muncul di sini.</p>
+                            </td>
+                        </tr>
+                    @endforelse
 
-                    @endforeach
-
-                    <tr id="emptyRow" class="hidden">
+                    <tr id="clientEmptyRow" class="hidden">
                         <td colspan="6" class="px-5 py-12 text-center">
                             <x-lucide-search-x class="mx-auto size-8 text-slate-300" />
-
-                            <p class="mt-3 text-sm font-semibold text-slate-700">
-                                Pengajuan KRS tidak ditemukan
-                            </p>
-
-                            <p class="mt-1 text-xs text-slate-400">
-                                Coba gunakan kata kunci atau filter status yang berbeda.
-                            </p>
+                            <p class="mt-3 text-sm font-semibold text-slate-700">Pengajuan KRS tidak ditemukan</p>
+                            <p class="mt-1 text-xs text-slate-400">Coba gunakan kata kunci pencarian atau filter status yang lain.</p>
                         </td>
                     </tr>
-
                 </tbody>
             </table>
         </div>
-
-        <div class="flex flex-col justify-between gap-3 border-t border-slate-100 p-5 sm:flex-row sm:items-center">
-            <p id="jumlahData" class="text-xs text-slate-400">
-                Menampilkan {{ $totalPengajuan }} pengajuan mahasiswa.
-            </p>
-
-            <p class="text-xs text-slate-400">
-                Data pengajuan merupakan data contoh.
-            </p>
-        </div>
-
     </div>
-
-    <div class="rounded-2xl border border-blue-100 bg-blue-50 p-5">
-        <div class="flex items-start gap-3">
-            <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm">
-                <x-lucide-info class="size-5" />
-            </div>
-
-            <div>
-                <h3 class="text-sm font-bold text-blue-800">
-                    Informasi Akademik
-                </h3>
-
-                <p class="mt-2 text-xs leading-6 text-blue-700">
-                    Periksa jumlah SKS dan rencana studi mahasiswa sebelum memberikan
-                    persetujuan. Perubahan status pada halaman ini hanya simulasi
-                    tampilan dan belum disimpan ke database.
-                </p>
-            </div>
-        </div>
-    </div>
-
 </div>
 
-<div
-    id="modalDetail"
-    class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/40 p-4"
->
-    <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-surface p-6 shadow-xl">
-        <div class="flex items-center justify-between gap-3">
-            <h2 class="text-lg font-bold text-slate-900">
-                Detail Pengajuan KRS
-            </h2>
-
+<div id="modalDetail" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+    <div class="w-full max-w-lg overflow-hidden rounded-3xl bg-surface border border-slate-200 shadow-2xl">
+        <div class="flex items-start justify-between border-b border-slate-100 p-5">
+            <div>
+                <h3 class="text-base font-bold text-slate-900">Detail Pengajuan KRS</h3>
+                <p id="mdlSub" class="text-xs text-slate-500 font-mono mt-0.5"></p>
+            </div>
             <button
                 type="button"
-                id="tutupModal"
-                class="flex size-9 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100"
+                onclick="tutupModalDetail()"
+                class="flex size-8 items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 transition cursor-pointer"
             >
-                <x-lucide-x class="size-5" />
+                <x-lucide-x class="size-4" />
             </button>
         </div>
 
-        <div class="mt-5 space-y-4">
-            <div>
-                <p class="text-xs text-slate-400">Nama Mahasiswa</p>
-                <p id="detailNama" class="mt-1 text-sm font-semibold text-slate-900">-</p>
-            </div>
-
-            <div>
-                <p class="text-xs text-slate-400">NPM</p>
-                <p id="detailNpm" class="mt-1 text-sm font-semibold text-slate-900">-</p>
-            </div>
-
-            <div>
-                <p class="text-xs text-slate-400">Program Studi</p>
-                <p id="detailProdi" class="mt-1 text-sm font-semibold text-slate-900">-</p>
-            </div>
-
-            <div>
-                <p class="text-xs text-slate-400">Kelas</p>
-                <p id="detailKelas" class="mt-1 text-sm font-semibold text-slate-900">-</p>
-            </div>
-
-            <div>
-                <p class="text-xs text-slate-400">Total SKS</p>
-                <p id="detailSks" class="mt-1 text-sm font-semibold text-slate-900">-</p>
-            </div>
-
-            <div>
-                <p class="text-xs text-slate-400">Status Pengajuan</p>
-                <p id="detailStatus" class="mt-1 text-sm font-semibold text-slate-900">-</p>
+        <div class="p-5 space-y-4 text-xs">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <span class="text-slate-400 block mb-1">Nama Mahasiswa</span>
+                    <p id="mdlNama" class="font-semibold text-slate-800 text-sm"></p>
+                </div>
+                <div>
+                    <span class="text-slate-400 block mb-1">NPM / NIM</span>
+                    <p id="mdlNpm" class="font-semibold text-slate-800 text-sm font-mono"></p>
+                </div>
+                <div>
+                    <span class="text-slate-400 block mb-1">Program Studi</span>
+                    <p id="mdlProdi" class="font-semibold text-slate-800"></p>
+                </div>
+                <div>
+                    <span class="text-slate-400 block mb-1">Kelas Perkuliahan</span>
+                    <p id="mdlKelas" class="font-semibold text-slate-800"></p>
+                </div>
+                <div>
+                    <span class="text-slate-400 block mb-1">Beban SKS Diajukan</span>
+                    <p id="mdlSks" class="font-semibold text-slate-800 text-sm"></p>
+                </div>
+                <div>
+                    <span class="text-slate-400 block mb-1">Status Pengajuan</span>
+                    <p id="mdlStatus" class="font-semibold text-slate-800 capitalize"></p>
+                </div>
             </div>
         </div>
 
-        <div class="mt-6 flex justify-end">
+        <div class="border-t border-slate-100 bg-slate-50/50 p-4 flex justify-end">
             <button
                 type="button"
-                id="tutupModalBawah"
-                class="rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white transition hover:opacity-90"
+                onclick="tutupModalDetail()"
+                class="rounded-xl bg-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-300 transition cursor-pointer"
             >
                 Tutup
             </button>
@@ -401,143 +303,110 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const container = document.querySelector('.dosen-krs');
-
-    if (!container) return;
-
-    const rows = Array.from(container.querySelectorAll('.student-row'));
     const inputCari = document.getElementById('cariMahasiswa');
     const filterStatus = document.getElementById('filterStatus');
-    const emptyRow = document.getElementById('emptyRow');
-    const jumlahData = document.getElementById('jumlahData');
+    const btnReset = document.getElementById('btnResetFilter');
+    const rows = document.querySelectorAll('.student-row');
+    const emptyRow = document.getElementById('clientEmptyRow');
+
+    function filterTable() {
+        const query = inputCari ? inputCari.value.trim().toLowerCase() : '';
+        const status = filterStatus ? filterStatus.value.toLowerCase() : '';
+        let visibleCount = 0;
+
+        rows.forEach(function (row) {
+            const matchSearch = !query || (row.dataset.search && row.dataset.search.includes(query));
+            const matchStatus = !status || (row.dataset.status && row.dataset.status === status);
+
+            if (matchSearch && matchStatus) {
+                row.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                row.classList.add('hidden');
+            }
+        });
+
+        if (emptyRow) {
+            emptyRow.classList.toggle('hidden', visibleCount > 0 || rows.length === 0);
+        }
+    }
+
+    if (inputCari) inputCari.addEventListener('input', filterTable);
+    if (filterStatus) filterStatus.addEventListener('change', filterTable);
+    if (btnReset) {
+        btnReset.addEventListener('click', function () {
+            if (inputCari) inputCari.value = '';
+            if (filterStatus) filterStatus.value = '';
+            filterTable();
+        });
+    }
+});
+
+function bukaModalDetail(row) {
+    if (!row) return;
+    const d = row.dataset;
+    document.getElementById('mdlNama').textContent = d.nama || '-';
+    document.getElementById('mdlNpm').textContent = d.npm || '-';
+    document.getElementById('mdlSub').textContent = (d.nama || '-') + ' (' + (d.npm || '-') + ')';
+    document.getElementById('mdlProdi').textContent = d.prodi || '-';
+    document.getElementById('mdlKelas').textContent = 'Kelas ' + (d.kelas || '-');
+    document.getElementById('mdlSks').textContent = (d.sks || 0) + ' SKS';
+    document.getElementById('mdlStatus').textContent = d.status || '-';
 
     const modal = document.getElementById('modalDetail');
-    const tutupModal = document.getElementById('tutupModal');
-    const tutupModalBawah = document.getElementById('tutupModalBawah');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
 
-    function hitungStatus() {
-        let menunggu = 0;
-        let disetujui = 0;
-        let revisi = 0;
+function tutupModalDetail() {
+    const modal = document.getElementById('modalDetail');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
 
-        rows.forEach(function (row) {
-            if (row.dataset.status === 'Menunggu') menunggu++;
-            if (row.dataset.status === 'Disetujui') disetujui++;
-            if (row.dataset.status === 'Perlu Revisi') revisi++;
-        });
-
-        document.getElementById('totalPengajuan').textContent = rows.length;
-        document.getElementById('totalMenunggu').textContent = menunggu;
-        document.getElementById('totalDisetujui').textContent = disetujui;
-        document.getElementById('totalRevisi').textContent = revisi;
+function konfirmasiSetujui(row) {
+    if (!row) return;
+    const id = row.dataset.id;
+    const nama = row.dataset.nama || 'mahasiswa ini';
+    if (!id) {
+        alert('ID pengajuan KRS tidak valid.');
+        return;
     }
 
-    function filterMahasiswa() {
-        const keyword = inputCari.value.trim().toLowerCase();
-        const status = filterStatus.value;
-        let jumlahTerlihat = 0;
-
-        rows.forEach(function (row) {
-            const npm = row.dataset.npm.toLowerCase();
-            const nama = row.dataset.nama.toLowerCase();
-            const prodi = row.dataset.prodi.toLowerCase();
-
-            const cocokKeyword =
-                npm.includes(keyword) ||
-                nama.includes(keyword) ||
-                prodi.includes(keyword);
-
-            const cocokStatus =
-                !status || row.dataset.status === status;
-
-            const tampil = cocokKeyword && cocokStatus;
-
-            row.classList.toggle('hidden', !tampil);
-
-            if (tampil) jumlahTerlihat++;
+    if (confirm('Setujui pengajuan KRS untuk ' + nama + '?')) {
+        fetch('{{ url("/krs/setujui") }}/' + id, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                row.dataset.status = 'disetujui';
+                const badgeCell = row.querySelector('td:nth-child(5)');
+                if (badgeCell) {
+                    badgeCell.innerHTML = '<span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Disetujui</span>';
+                }
+                const actionCell = row.querySelector('td:nth-child(6) .flex');
+                if (actionCell) {
+                    const btnSetujui = actionCell.querySelector('button:last-child');
+                    if (btnSetujui && btnSetujui !== actionCell.firstElementChild) {
+                        btnSetujui.remove();
+                    }
+                }
+                alert(data.message || ('KRS untuk ' + nama + ' berhasil disetujui.'));
+                window.location.reload();
+            } else {
+                alert(data.message || 'Gagal menyetujui KRS');
+            }
+        })
+        .catch(err => {
+            alert('Terjadi kesalahan saat memproses persetujuan KRS.');
         });
-
-        emptyRow.classList.toggle('hidden', jumlahTerlihat > 0);
-
-        jumlahData.textContent =
-            'Menampilkan ' + jumlahTerlihat + ' dari ' + rows.length + ' pengajuan mahasiswa.';
     }
-
-    function bukaModal() {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    }
-
-    function tutupModalDetail() {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-
-    inputCari.addEventListener('input', filterMahasiswa);
-    filterStatus.addEventListener('change', filterMahasiswa);
-
-    container.querySelectorAll('.detailKrs').forEach(function (button) {
-        button.addEventListener('click', function () {
-            const row = this.closest('.student-row');
-
-            document.getElementById('detailNama').textContent = row.dataset.nama;
-            document.getElementById('detailNpm').textContent = row.dataset.npm;
-            document.getElementById('detailProdi').textContent = row.dataset.prodi;
-            document.getElementById('detailKelas').textContent = row.dataset.kelas;
-            document.getElementById('detailSks').textContent = row.dataset.sks + ' SKS';
-            document.getElementById('detailStatus').textContent = row.dataset.status;
-
-            bukaModal();
-        });
-    });
-
-    container.querySelectorAll('.setujuiKrs').forEach(function (button) {
-        button.addEventListener('click', function () {
-            const row = this.closest('.student-row');
-
-            if (row.dataset.status !== 'Menunggu') return;
-
-            const konfirmasi = confirm(
-                'Setujui KRS mahasiswa ' + row.dataset.nama + '?'
-            );
-
-            if (!konfirmasi) return;
-
-            row.dataset.status = 'Disetujui';
-
-            const badge = row.querySelector('.status-badge');
-
-            badge.textContent = 'Disetujui';
-            badge.className =
-                'status-badge inline-flex items-center rounded-xl bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700';
-
-            this.disabled = true;
-
-            hitungStatus();
-            filterMahasiswa();
-
-            alert('KRS berhasil disetujui pada simulasi tampilan.');
-        });
-    });
-
-    tutupModal.addEventListener('click', tutupModalDetail);
-    tutupModalBawah.addEventListener('click', tutupModalDetail);
-
-    modal.addEventListener('click', function (event) {
-        if (event.target === modal) {
-            tutupModalDetail();
-        }
-    });
-
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') {
-            tutupModalDetail();
-        }
-    });
-
-    hitungStatus();
-    filterMahasiswa();
-});
+}
 </script>
-
 @endsection

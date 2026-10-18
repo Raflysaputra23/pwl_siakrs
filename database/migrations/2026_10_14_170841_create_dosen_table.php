@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('email', 200)->nullable();
             $table->string('no_telp', 20)->nullable();
             $table->text('alamat')->nullable();
-            $table->timestamp('created_at');
+            $table->timestamps();
         });
     }
 

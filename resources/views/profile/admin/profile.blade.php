@@ -6,7 +6,7 @@
         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
                 <div class="w-24 h-24 rounded-2xl bg-white/20 border-2 border-white/40 backdrop-blur-md flex items-center justify-center text-white text-3xl font-extrabold shadow-inner shrink-0">
-                    AD
+                    {{ strtoupper(substr($user->username ?? 'AD', 0, 2)) }}
                 </div>
                 <div class="space-y-1.5">
                     <div class="flex flex-wrap items-center gap-2">
@@ -20,20 +20,13 @@
                     </div>
                     <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Administrator SIAKRS</h1>
                     <p class="text-blue-100 text-sm font-mono flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <span>Username: admin</span>
+                        <span>Username: {{ $user->username ?? 'admin' }}</span>
                         <span class="opacity-60">·</span>
                         <span>admin@univ.ac.id</span>
                         <span class="opacity-60">·</span>
                         <span>Hak Akses Penuh (Super Admin)</span>
                     </p>
                 </div>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <button type="button" onclick="toggleEditProfile()" id="btn-edit-toggle" class="inline-flex items-center gap-2 rounded-xl bg-white text-primary hover:bg-blue-50 px-4 py-2.5 text-xs font-bold shadow-sm transition cursor-pointer">
-                    <x-lucide-pencil class="size-4" />
-                    <span>Edit Profil</span>
-                </button>
             </div>
         </div>
         <div class="absolute -right-16 -top-16 w-60 h-60 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -71,20 +64,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="rounded-2xl bg-surface p-6 border border-slate-200 shadow-sm space-y-4">
-                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <x-lucide-key-round class="size-4 text-primary" />
-                    Keamanan Akun
-                </h3>
-                <p class="text-xs text-slate-500 leading-relaxed">
-                    Sandi akun administrator harus diganti secara berkala untuk menjaga integritas sistem informasi akademik.
-                </p>
-                <button type="button" onclick="alert('Form ubah password dapat dibuka di sini.')" class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2 text-xs font-semibold shadow-xs transition cursor-pointer">
-                    <x-lucide-lock class="size-3.5" />
-                    Ubah Kata Sandi
-                </button>
-            </div>
         </div>
 
         <div class="lg:col-span-2 rounded-2xl bg-surface border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6">
@@ -103,7 +82,7 @@
                 </span>
             </div>
 
-            <form onsubmit="event.preventDefault(); saveProfile();" class="space-y-4">
+            <form class="space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
@@ -111,7 +90,7 @@
                         </label>
                         <div class="relative">
                             <x-lucide-at-sign class="size-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                            <input type="text" id="admin-username" value="admin" readonly class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-slate-50 text-sm font-mono text-slate-700 focus:outline-none cursor-not-allowed" />
+                            <input type="text" id="admin-username" value="{{ $user->username ?? 'admin' }}" readonly class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-slate-50 text-sm font-mono text-slate-700 focus:outline-none cursor-not-allowed" />
                         </div>
                         <p class="text-[10px] text-slate-400 mt-1">Username akun default administrator tidak dapat diubah</p>
                     </div>
@@ -125,124 +104,9 @@
                             <input type="text" value="Super Administrator" readonly class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-slate-50 text-sm font-semibold text-primary focus:outline-none cursor-not-allowed" />
                         </div>
                     </div>
-
-                    <div class="sm:col-span-2">
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                            Nama Lengkap Pengelola <span class="text-rose-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <x-lucide-user class="size-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                            <input type="text" id="admin-nama" value="Administrator SIAKRS" readonly class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-slate-50 text-sm font-semibold text-slate-800 transition focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                            Unit / Bagian Kerja
-                        </label>
-                        <div class="relative">
-                            <x-lucide-building-2 class="size-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                            <input type="text" id="admin-unit" value="Biro Administrasi Akademik & Kemahasiswaan" readonly class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 transition focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                            Email Resmi
-                        </label>
-                        <div class="relative">
-                            <x-lucide-mail class="size-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                            <input type="email" id="admin-email" value="admin@univ.ac.id" readonly class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 transition focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                            No. Telepon / Hotline
-                        </label>
-                        <div class="relative">
-                            <x-lucide-phone class="size-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                            <input type="text" id="admin-telp" value="(0721) 701609" readonly class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 transition focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4 font-mono" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                            Lokasi Kantor Pelayanan
-                        </label>
-                        <div class="relative">
-                            <x-lucide-map-pin class="size-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                            <input type="text" id="admin-lokasi" value="Gedung Rektorat Lt. 1, Bagian Akademik" readonly class="w-full px-3.5 py-2.5 ps-10 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 transition focus:outline-primary/10 focus:border-primary outline-transparent focus:outline-4" />
-                        </div>
-                    </div>
-                </div>
-
-                <div id="edit-buttons-bar" class="hidden pt-4 border-t border-slate-100 flex items-center justify-end gap-2.5">
-                    <button type="button" onclick="cancelEditProfile()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-semibold transition cursor-pointer">
-                        Batal
-                    </button>
-                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-semibold shadow-sm transition flex items-center gap-2 cursor-pointer">
-                        <x-lucide-check-circle-2 class="size-4" />
-                        Simpan Perubahan
-                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-<script>
-    let isEditing = false;
-    const editableFields = ['admin-nama', 'admin-unit', 'admin-email', 'admin-telp', 'admin-lokasi'];
-    const originalValues = {};
-
-    function toggleEditProfile() {
-        isEditing = !isEditing;
-        const btnToggle = document.getElementById('btn-edit-toggle');
-        const badgeEdit = document.getElementById('badge-edit-mode');
-        const buttonsBar = document.getElementById('edit-buttons-bar');
-
-        editableFields.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                if (isEditing) {
-                    originalValues[id] = el.value;
-                    el.readOnly = false;
-                    el.classList.remove('bg-slate-50');
-                    el.classList.add('bg-white');
-                } else {
-                    el.readOnly = true;
-                    el.classList.remove('bg-white');
-                    el.classList.add('bg-slate-50');
-                }
-            }
-        });
-
-        if (isEditing) {
-            btnToggle.classList.add('hidden');
-            badgeEdit.classList.remove('hidden');
-            buttonsBar.classList.remove('hidden');
-            document.getElementById('admin-nama').focus();
-        } else {
-            btnToggle.classList.remove('hidden');
-            badgeEdit.classList.add('hidden');
-            buttonsBar.classList.add('hidden');
-        }
-    }
-
-    function cancelEditProfile() {
-        editableFields.forEach(id => {
-            const el = document.getElementById(id);
-            if (el && originalValues[id] !== undefined) {
-                el.value = originalValues[id];
-            }
-        });
-        toggleEditProfile();
-    }
-
-    function saveProfile() {
-        alert('Data profil administrator berhasil diperbarui!');
-        toggleEditProfile();
-    }
-</script>
 @endsection

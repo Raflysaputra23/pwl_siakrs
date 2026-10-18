@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('id_krs_mahasiswa');
             $table->uuid('id_kelas');
-            $table->timestamp('created_at');
+            $table->timestamps();
         });
     }
 

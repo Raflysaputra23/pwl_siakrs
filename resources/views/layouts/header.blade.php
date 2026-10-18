@@ -6,12 +6,12 @@
         <button class="flex flex-col gap-2 text-black cursor-pointer items-center justify-center h-10 w-10 rounded-xl bg-background border border-slate-300">
             <x-lucide-bell class="size-5"/>
         </button>
-        <a href="{{ route('profile.mahasiswa') }}" class="flex items-center gap-3.5 rounded-2xl px-3.5 py-2 group transition-all hover:bg-primary/10 border border-transparent hover:border-primary/30">
+        <a href="{{ route('profile') }}" class="flex items-center gap-3.5 rounded-2xl px-3.5 py-2 group transition-all hover:bg-primary/10 border border-transparent hover:border-primary/30">
             <div class="text-end">
-                <h4 class="text-sm font-semibold group-hover:text-primary transition-all truncate">Rafly</h4>
-                <p class="capitalize text-slate-600 text-xs">Mahasiswa</p>
+                <h4 class="text-sm font-semibold group-hover:text-primary transition-all truncate">{{ Auth::user()->role === 'mahasiswa' ? Auth::user()->mahasiswa->nama_lengkap : Auth::user()->dosen->nama_lengkap ?? Auth::user()->username}}</h4>
+                <p class="capitalize text-slate-600 text-xs">{{ Auth::user()->role }}</p>
             </div>
-            <img src="" alt="image" class="w-10 h-10 rounded-full border border-slate-300 object-cover">
+            <img src="{{ 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->nama_lengkap) . '&background=random' }}" alt="poto profile" class="w-10 h-10 rounded-full border border-slate-300 object-cover">
         </a>
     </div>
 </header>

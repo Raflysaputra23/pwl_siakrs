@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('kode_fakultas', 10)->nullable()->unique('fakultas_kode_fakultas_key');
             $table->string('nama_fakultas', 100)->nullable();
             $table->string('singkatan', 50)->nullable();
-            $table->timestamp('created_at');
+            $table->timestamps();
         });
     }
 

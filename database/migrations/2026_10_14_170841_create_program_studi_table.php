@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nama_prodi', 100)->nullable();
             $table->string('singkatan', 50)->nullable();
             $table->uuid('id_fakultas');
-            $table->timestamp('created_at');
+            $table->timestamps();
         });
     }
 

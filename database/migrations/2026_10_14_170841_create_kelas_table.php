@@ -23,7 +23,7 @@ return new class extends Migration
             $table->time('jam_selesai')->nullable();
             $table->string('ruangan', 100)->nullable();
             $table->integer('kapasitas')->nullable();
-            $table->timestamp('created_at');
+            $table->timestamps();
         });
     }
 

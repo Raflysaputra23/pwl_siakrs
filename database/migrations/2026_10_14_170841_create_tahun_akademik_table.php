@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('tahun', 10)->nullable();
             $table->enum('semester', ['ganjil', 'genap'])->nullable();
             $table->enum('status', ['aktif', 'non-aktif'])->default('non-aktif');
-            $table->timestamp('created_at');
+            $table->timestamps();
         });
     }
 

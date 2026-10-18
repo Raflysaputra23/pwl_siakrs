@@ -26,7 +26,7 @@ return new class extends Migration
             $table->text('alamat')->nullable();
             $table->string('angkatan', 10)->nullable();
             $table->enum('status', ['aktif', 'lulus', 'cuti','keluar'])->default('aktif');
-            $table->timestamp('created_at');
+            $table->timestamps();
         });
     }
 

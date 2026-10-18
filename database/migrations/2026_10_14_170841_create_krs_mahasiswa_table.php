@@ -17,7 +17,7 @@ return new class extends Migration
             $table->uuid('id_data_mahasiswa');
             $table->char('dosen_pa_nip', 20);
             $table->enum('status', ['menunggu', 'disetujui', 'ditolak'])->default('menunggu');
-            $table->timestamp('created_at');
+            $table->timestamps();
         });
     }
 

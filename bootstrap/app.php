@@ -21,5 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (Throwable $e, $request){
+            return response()->view('errors.handle', [
+                'message' => "Terjadi kesalahan pada sistem",
+            ], 500);
+        });
     })->create();
